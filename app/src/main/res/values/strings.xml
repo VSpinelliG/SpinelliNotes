@@ -1,0 +1,34 @@
+<resources>
+    <string name="app_name">Notas do Spinelli</string>
+    <string name="creator">Vinícius Spinelli</string>
+    <string name="label_no_note">Nenhuma nota.\nAdicione a primeira:</string>
+    <string name="button_first_add">Adicionar primeira nota</string>
+
+    <!-- Dialog deletar !-->
+    <string name="message_dialog">Deseja realmente apagar esta nota?</string>
+    <string name="yes_dialog">Sim</string>
+    <string name="no_dialog">Não</string>
+    <string name="cancel_dialog">Cancelar</string>
+    <string name="notify_dialog">Notificação (Add personalizar na próxima etapa)</string>
+    <string name="notify_default_0">Nunca</string>
+    <string name="notify_default_1">5 minutos antes</string>
+    <string name="notify_default_2">10 minutos antes</string>
+
+    <!--Nova nota e nota extendida !-->
+    <string name="title">Título</string>
+    <string name="resume">Resumo</string>
+    <string name="description">Descrição</string>
+    <string name="selectColor">Seleciona a cor da nota:</string>
+    <string name="yellow">Amarelo</string>
+    <string name="gray">Cinza</string>
+    <string name="green">Verde</string>
+    <string name="pink">Rosa</string>
+    <string name="date">Data</string>
+    <string name="time">Horário</string>
+    <string name="notify">Notificar</string>
+
+    <!-- Toast !-->
+    <string name="error_sort">Erro ao ordenar nesta categoria.</string>
+    <string name="required_title">Título é obrigatório!</string>
+    <string name="error_select_color">Problema com a cor.</string>
+</resources>
