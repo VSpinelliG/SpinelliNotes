@@ -35,6 +35,7 @@ class NewNoteActivity : AppCompatActivity() {
 
     }
 
+    //pega a cor da nota selecionada na criação em tempo real
     private fun setNoteColor() {
         radio_group_new_note.setOnCheckedChangeListener { _, checkedId ->
             try {
@@ -55,6 +56,7 @@ class NewNoteActivity : AppCompatActivity() {
         }
     }
 
+    //pegando os valores de data e hora
     @SuppressLint("NewApi")
     private fun setDateAndTime() {
         val locale = Locale("pt", "BR")
@@ -68,7 +70,7 @@ class NewNoteActivity : AppCompatActivity() {
         button_date_new_note.setOnClickListener {
             val datePickerListener =
                 DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                    calendar.set(year, month, day, 0, 0, 0)
+                    calendar.set(year, month, day, hour, minute, 0)
 
                     val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
                     button_date_new_note.text = dateFormat.format(calendar.time)
@@ -108,14 +110,16 @@ class NewNoteActivity : AppCompatActivity() {
         }
     }
 
+    //criação do toolbar com os botões
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_new_note, menu)
         return true
     }
 
+    //tratamento dos clicks dos botões do toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle presses on the action bar menu items
+
         when (item.itemId) {
             R.id.save -> {
                 if (title_new_note.text.toString() == "") Toast.makeText(this, R.string.required_title, Toast.LENGTH_SHORT).show() else {
@@ -123,6 +127,8 @@ class NewNoteActivity : AppCompatActivity() {
                     if (ArrayNotes.notes.size != 0) {
                         id = ArrayNotes.notes.size
                     }
+
+                    //pegando a cor selecionada pelo usuário ao confirmar a criação
                     val radioButton = findViewById<RadioButton>(radio_group_new_note.checkedRadioButtonId)
                     val background:Int
                     background = when (radioButton.text) {
@@ -132,6 +138,7 @@ class NewNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
 
+                    //adicionando nota ao array
                     ArrayNotes.notes.add(
                         Note(
                             id, title_new_note.text.toString(), resume_new_note.text.toString(),

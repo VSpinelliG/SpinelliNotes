@@ -39,6 +39,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
 
     }
 
+    //preenchendo os campos de visualização com os valores da nota selecionada
     private fun setNote(note: Note) {
 
         title_extended_note.setText(note.title)
@@ -62,18 +63,18 @@ class ExtendedNoteActivity : AppCompatActivity() {
             button_notify_extended_note.text = note.notify
         }
 
-        //setando calendario
+        //colocando os valores de data e hora no label dos botões referentes
         this.calendar = note.notifyDateTime
         button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
         button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
 
-        //retirando linha dos campos
+        //retirando linha dos campos edittext
         title_extended_note.background = null
         resume_extended_note.background = null
         description_extended_note.background = null
 
+        //pegando a cor e selecionando o radiobutton referente
         card_view_extended_note.setCardBackgroundColor(note.background)
-
         when (note.background) {
             Color.parseColor(this.resources.getString(R.string.parse_yellow)) -> yellow_extended_note.isChecked = true
             Color.parseColor(this.resources.getString(R.string.parse_gray)) -> gray_extended_note.isChecked = true
@@ -82,6 +83,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
     }
 
+    //método para caso o usuário mude os valores de data ou hora
     @SuppressLint("NewApi")
     private fun setDateAndTime() {
         val locale = Locale("pt", "BR")
@@ -93,11 +95,10 @@ class ExtendedNoteActivity : AppCompatActivity() {
         val minute = calendar.get(Calendar.MINUTE)
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
 
-
         button_date_extended_note.setOnClickListener {
             val datePickerListener =
                 DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                    calendar.set(year, month, day, 0, 0, 0)
+                    calendar.set(year, month, day, hour, minute, 0)
 
                     val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
                     button_date_extended_note.text = dateFormat.format(calendar.time)
@@ -137,6 +138,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
     }
 
+    //método para caso o usuário mude a cor da nota
     private fun setNoteColor() {
         radio_group_extended_note.setOnCheckedChangeListener { _, checkedId ->
             try {
@@ -157,12 +159,14 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
     }
 
+    //criação do toolbar com os botões
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         // Inflate the menu; this adds items to the action bar if it is present.
         menuInflater.inflate(R.menu.menu_new_note, menu)
         return true
     }
 
+    //tratamento dos clicks dos botões do toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         // Handle presses on the action bar menu items
         when (item.itemId) {
@@ -179,6 +183,8 @@ class ExtendedNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
                     val id = intent.getIntExtra("noteId", 0)
+
+                    //passando os valores atualizados para o array
                     ArrayNotes.notes[id] = Note(
                         id,
                         title_extended_note.text.toString(),

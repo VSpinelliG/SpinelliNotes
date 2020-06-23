@@ -23,28 +23,34 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
         runAdapter()
 
-        button_first_add.setOnClickListener {
-            val intent = Intent(this, NewNoteActivity::class.java)
-            startActivity(intent)
+        //quando não há nenhuma nota
+        if (button_first_add.isVisible) {
+            button_first_add.setOnClickListener {
+                val intent = Intent(this, NewNoteActivity::class.java)
+                startActivity(intent)
+            }
         }
 
     }
 
+    //após criar uma nota, a main é continuada
     override fun onRestart() {
         runAdapter()
         super.onRestart()
     }
 
+    //renderiza o recycler view (usado a cada criação, ordenação e exclusão de nota)
+    //e define o toolbar criado para esta activity
     private fun runAdapter() {
         setSupportActionBar(toolbar_main)
         recycle_view.adapter = NoteAdapter(this)
         recycle_view.layoutManager = LinearLayoutManager(this)
         recycle_view.setHasFixedSize(true)
-
     }
 
+    //criação do toolbar com os botões
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        // Inflate the menu; this adds items to the action bar if it is present.
+
         menuInflater.inflate(R.menu.menu_main, menu)
         if (ArrayNotes.notes.size == 0) {
             menu.getItem(0).isVisible = false
@@ -67,8 +73,9 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
         return true
     }
 
+    //tratamento dos clicks dos botões do toolbar
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        // Handle presses on the action bar menu items
+
         when (item.itemId) {
             R.id.add -> {
                 val intent = Intent(this, NewNoteActivity::class.java)
@@ -86,6 +93,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
         return super.onOptionsItemSelected(item)
     }
 
+    //ordenando as notas
     private fun sortOptions() {
         val alertDialog = AlertDialog.Builder(this)
 
@@ -106,6 +114,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
             val option = array[which]
 
+            //seleciona por qual categoria irá ordenar
             try {
                 when (option) {
                     title -> ArrayNotes.notes.sortWith(compareBy { it.title })
@@ -115,7 +124,6 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 dialog.dismiss()
                 runAdapter()
             }catch (e:IllegalArgumentException){
-                // Catch the color string parse exception
                 Toast.makeText(this, R.string.error_sort, Toast.LENGTH_LONG).show()
             }
         }
@@ -124,12 +132,14 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
         alertDialog.show()
     }
 
+    //mostrando uma nota
     override fun onItemClicked(note: Note) {
         val intent = Intent(this, ExtendedNoteActivity::class.java)
         intent.putExtra("noteId", ArrayNotes.notes.indexOf(note))
         startActivity(intent)
     }
 
+    //deletando nota
     override fun onDeleteClicked(note: Note) {
         val alertDialog = AlertDialog.Builder(this)
         alertDialog.setMessage(R.string.message_dialog_delete)

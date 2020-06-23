@@ -13,36 +13,41 @@ import kotlinx.android.synthetic.main.cardview_item.view.*
 
 class NoteAdapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
 
-
+    //cria a lista de cards a partir do visual xml do cardview
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
         val itemView = LayoutInflater.from(parent.context).inflate(R.layout.cardview_item,
         parent, false)
         return NoteViewHolder(itemView)
     }
 
+    //pega as informações do Array de Notas pra colocar no cardview por meio das
+    //variáveis mapeadas no NoteViewHolder
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
         val note = ArrayNotes.notes[position]
-        holder.bind(note,itemClickListener)
+        holder.bind(note, itemClickListener)
     }
 
     override fun getItemCount() = ArrayNotes.notes.size
 
 
+    //classe ViewHolder pra mapear os dados do xml para o Adapter
     class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         private val title: TextView = itemView.title
         private val resume: TextView = itemView.subtitle
         private val deleteNote: ImageView = itemView.delete_note
 
-        fun bind(note: Note,clickListener: OnItemClickListener)
+        fun bind(note: Note, clickListener: OnItemClickListener)
         {
             title.text = note.title
             resume.text = note.resume
 
+            //método pra expandir uma nota
             itemView.setOnClickListener {
                 clickListener.onItemClicked(note)
             }
 
+            //método pra deleta uma nota
             deleteNote.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION){
