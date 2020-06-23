@@ -89,10 +89,10 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
     private fun sortOptions() {
         val alertDialog = AlertDialog.Builder(this)
 
-        alertDialog.setTitle("Ordenar por")
+        alertDialog.setTitle(R.string.title_dialog_sort)
         alertDialog.setCancelable(false)
 
-        alertDialog.setNegativeButton("Cancelar") { dialog , _->
+        alertDialog.setNegativeButton(R.string.cancel_dialog) { dialog , _->
             dialog.dismiss()
         }
 
@@ -102,7 +102,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
         val array = arrayOf(title, resume, description)
 
-        alertDialog.setSingleChoiceItems(array, -1) { dialog, which ->
+        alertDialog.setItems(array) { dialog, which ->
 
             val option = array[which]
 
@@ -132,7 +132,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
     override fun onDeleteClicked(note: Note) {
         val alertDialog = AlertDialog.Builder(this)
-        alertDialog.setMessage(R.string.message_dialog)
+        alertDialog.setMessage(R.string.message_dialog_delete)
             .setCancelable(false)
             .setNegativeButton(R.string.no_dialog) { dialog,_->
                 dialog.dismiss()

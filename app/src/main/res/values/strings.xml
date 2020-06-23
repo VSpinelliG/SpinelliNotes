@@ -4,13 +4,14 @@
     <string name="label_no_note">Nenhuma nota.\nAdicione a primeira:</string>
     <string name="button_first_add">Adicionar primeira nota</string>
 
-    <!-- Dialog deletar !-->
-    <string name="message_dialog">Deseja realmente apagar esta nota?</string>
+    <!-- Dialogs !-->
+    <string name="message_dialog_delete">Deseja realmente apagar esta nota?</string>
+    <string name="title_dialog_sort">Ordenar por</string>
     <string name="yes_dialog">Sim</string>
     <string name="no_dialog">Não</string>
     <string name="cancel_dialog">Cancelar</string>
-    <string name="notify_dialog">Notificação (Add personalizar na próxima etapa)</string>
-    <string name="notify_default_0">Nunca</string>
+    <string name="notify_dialog">Notificação</string>
+    <string name="notify_default_0">Não nofiticar</string>
     <string name="notify_default_1">5 minutos antes</string>
     <string name="notify_default_2">10 minutos antes</string>
 
@@ -26,6 +27,11 @@
     <string name="date">Data</string>
     <string name="time">Horário</string>
     <string name="notify">Notificar</string>
+
+    <string name="parse_yellow">YELLOW</string>
+    <string name="parse_gray">LIGHTGRAY</string>
+    <string name="parse_green">GREEN</string>
+    <string name="parse_pink">MAGENTA</string>
 
     <!-- Toast !-->
     <string name="error_sort">Erro ao ordenar nesta categoria.</string>

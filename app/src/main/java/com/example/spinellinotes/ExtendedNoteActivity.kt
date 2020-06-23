@@ -75,9 +75,9 @@ class ExtendedNoteActivity : AppCompatActivity() {
         card_view_extended_note.setCardBackgroundColor(note.background)
 
         when (note.background) {
-            Color.parseColor("YELLOW") -> yellow_extended_note.isChecked = true
-            Color.parseColor("LIGHTGRAY") -> gray_extended_note.isChecked = true
-            Color.parseColor("GREEN") -> green_extended_note.isChecked = true
+            Color.parseColor(this.resources.getString(R.string.parse_yellow)) -> yellow_extended_note.isChecked = true
+            Color.parseColor(this.resources.getString(R.string.parse_gray)) -> gray_extended_note.isChecked = true
+            Color.parseColor(this.resources.getString(R.string.parse_green)) -> green_extended_note.isChecked = true
             else -> pink_extended_note.isChecked = true
         }
     }
@@ -142,10 +142,14 @@ class ExtendedNoteActivity : AppCompatActivity() {
             try {
                 val radioButton: RadioButton = findViewById(checkedId)
                 when (radioButton.text) {
-                    "Amarelo" -> card_view_extended_note.setCardBackgroundColor(Color.parseColor("YELLOW"))
-                    "Cinza" -> card_view_extended_note.setCardBackgroundColor(Color.parseColor("GRAY"))
-                    "Verde" -> card_view_extended_note.setCardBackgroundColor(Color.parseColor("GREEN"))
-                    else -> card_view_extended_note.setCardBackgroundColor(Color.parseColor("MAGENTA"))
+                    this.resources.getString(R.string.yellow) -> card_view_extended_note
+                        .setCardBackgroundColor(Color.parseColor(this.resources.getString(R.string.parse_yellow)))
+                    this.resources.getString(R.string.gray) -> card_view_extended_note
+                        .setCardBackgroundColor(Color.parseColor(this.resources.getString(R.string.parse_gray)))
+                    this.resources.getString(R.string.green) -> card_view_extended_note
+                        .setCardBackgroundColor(Color.parseColor(this.resources.getString(R.string.parse_green)))
+                    else -> card_view_extended_note
+                        .setCardBackgroundColor(Color.parseColor(this.resources.getString(R.string.parse_pink)))
                 }
             } catch (e: IllegalArgumentException) {
                 Toast.makeText(this, R.string.error_select_color, Toast.LENGTH_LONG).show()
@@ -169,10 +173,10 @@ class ExtendedNoteActivity : AppCompatActivity() {
                     val radioButton = findViewById<RadioButton>(radio_group_extended_note.checkedRadioButtonId)
                     val background: Int
                     background = when (radioButton.text) {
-                        "Amarelo" -> Color.parseColor("YELLOW")
-                        "Cinza" -> Color.parseColor("LIGHTGRAY")
-                        "Verde" -> Color.parseColor("GREEN")
-                        else -> Color.parseColor("MAGENTA")
+                        this.resources.getString(R.string.yellow) -> Color.parseColor(this.resources.getString(R.string.parse_yellow))
+                        this.resources.getString(R.string.gray) -> Color.parseColor(this.resources.getString(R.string.parse_gray))
+                        this.resources.getString(R.string.green) -> Color.parseColor(this.resources.getString(R.string.parse_green))
+                        else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
                     val id = intent.getIntExtra("noteId", 0)
                     ArrayNotes.notes[id] = Note(
