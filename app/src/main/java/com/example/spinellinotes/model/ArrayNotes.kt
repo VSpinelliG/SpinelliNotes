@@ -1,5 +1,5 @@
 package com.example.spinellinotes.model
-
+/*
 import kotlin.collections.ArrayList
 
 class ArrayNotes {
@@ -7,4 +7,4 @@ class ArrayNotes {
         var notes = ArrayList<Note>()
     }
 
-}
+}*/

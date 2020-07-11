@@ -11,15 +11,19 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
-import com.example.spinellinotes.model.ArrayNotes
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.example.spinellinotes.model.Note
+import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_extended_note.*
 import java.text.DateFormat
 import java.util.*
 
 class ExtendedNoteActivity : AppCompatActivity() {
 
-    private lateinit var calendar:Calendar
+    private lateinit var noteViewModel: NoteViewModel
+    private lateinit var note:Note
+    //private lateinit var calendar:Calendar
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,11 +33,12 @@ class ExtendedNoteActivity : AppCompatActivity() {
         setSupportActionBar(toolbar_extended_note)
         supportActionBar?.apply { setDisplayShowHomeEnabled(true) }
 
-        val note:Note = ArrayNotes.notes[intent.getIntExtra("noteId", 0)]
+        noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+        note = noteViewModel.getNoteById(intent.getLongExtra("noteId", 0))
 
         setNote(note)
 
-        setDateAndTime()
+        //setDateAndTime()
 
         setNoteColor()
 
@@ -64,9 +69,9 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
 
         //colocando os valores de data e hora no label dos botões referentes
-        this.calendar = note.notifyDateTime
-        button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
-        button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
+        //this.calendar = note.notifyDateTime
+        //button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
+        //button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
 
         //retirando linha dos campos edittext
         title_extended_note.background = null
@@ -84,6 +89,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
     }
 
     //método para caso o usuário mude os valores de data ou hora
+    /*
     @SuppressLint("NewApi")
     private fun setDateAndTime() {
         val locale = Locale("pt", "BR")
@@ -138,6 +144,8 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
     }
 
+     */
+
     //método para caso o usuário mude a cor da nota
     private fun setNoteColor() {
         radio_group_extended_note.setOnCheckedChangeListener { _, checkedId ->
@@ -182,19 +190,21 @@ class ExtendedNoteActivity : AppCompatActivity() {
                         this.resources.getString(R.string.green) -> Color.parseColor(this.resources.getString(R.string.parse_green))
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
-                    val id = intent.getIntExtra("noteId", 0)
 
                     //passando os valores atualizados para o array
-                    ArrayNotes.notes[id] = Note(
-                        id,
-                        title_extended_note.text.toString(),
-                        resume_extended_note.text.toString(),
-                        description_extended_note.text.toString(),
-                        background,
-                        calendar,
-                        button_notify_extended_note.text.toString(),
-                        ArrayNotes.notes[id].createDate
+                    noteViewModel.update(
+                        Note(
+                            note.id,
+                            title_extended_note.text.toString(),
+                            resume_extended_note.text.toString(),
+                            description_extended_note.text.toString(),
+                            background,
+                            button_notify_extended_note.text.toString()
+                            //calendar,
+                            //ArrayNotes.notes[id].createDate
+                        )
                     )
+
                     finish()
                 }
                 return true

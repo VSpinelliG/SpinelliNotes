@@ -11,8 +11,9 @@ import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.spinellinotes.model.ArrayNotes
+import androidx.lifecycle.ViewModelProvider
 import com.example.spinellinotes.model.Note
+import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_new_note.*
 import java.text.DateFormat
 import java.util.*
@@ -20,6 +21,7 @@ import java.util.*
 class NewNoteActivity : AppCompatActivity() {
 
     private val calendar: Calendar = Calendar.getInstance()
+    private lateinit var noteViewModel: NoteViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -123,10 +125,10 @@ class NewNoteActivity : AppCompatActivity() {
         when (item.itemId) {
             R.id.save -> {
                 if (title_new_note.text.toString() == "") Toast.makeText(this, R.string.required_title, Toast.LENGTH_SHORT).show() else {
-                    var id = 0
+                    /*var id = 0
                     if (ArrayNotes.notes.size != 0) {
                         id = ArrayNotes.notes.size
-                    }
+                    }*/
 
                     //pegando a cor selecionada pelo usuário ao confirmar a criação
                     val radioButton = findViewById<RadioButton>(radio_group_new_note.checkedRadioButtonId)
@@ -139,14 +141,14 @@ class NewNoteActivity : AppCompatActivity() {
                     }
 
                     //adicionando nota ao array
-                    ArrayNotes.notes.add(
+                    noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+                    noteViewModel.insert(
                         Note(
-                            id, title_new_note.text.toString(), resume_new_note.text.toString(),
-                            description_new_note.text.toString(), background, calendar,
-                            button_notify_new_note.text.toString(), Date()
+                            null, title_new_note.text.toString(),
+                            resume_new_note.text.toString(), description_new_note.text.toString(),
+                            background, /*calendar,*/ button_notify_new_note.text.toString()//, Date()
                         )
                     )
-
                     finish()
                 }
                 return true

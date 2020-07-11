@@ -4,25 +4,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spinellinotes.adapters.NoteAdapter
-import com.example.spinellinotes.model.ArrayNotes
 import com.example.spinellinotes.model.Note
+import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
-
 class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
+
+    private lateinit var noteViewModel: NoteViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+
         runAdapter()
 
+        /*
         //quando não há nenhuma nota
         if (button_first_add.isVisible) {
             button_first_add.setOnClickListener {
@@ -30,29 +35,39 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 startActivity(intent)
             }
         }
+         */
 
     }
 
     //após criar uma nota, a main é continuada
-    override fun onRestart() {
+    /*override fun onRestart() {
         runAdapter()
         super.onRestart()
-    }
+    }*/
 
     //renderiza o recycler view (usado a cada criação, ordenação e exclusão de nota)
     //e define o toolbar criado para esta activity
     private fun runAdapter() {
         setSupportActionBar(toolbar_main)
-        recycle_view.adapter = NoteAdapter(this)
+
+        val adapter = NoteAdapter(this)
+        recycle_view.adapter = adapter
+
+        noteViewModel.allNotes.observe(this, Observer { notes ->
+            notes?.let { adapter.setNotes(it) }
+        })
+
         recycle_view.layoutManager = LinearLayoutManager(this)
         recycle_view.setHasFixedSize(true)
+
     }
 
     //criação do toolbar com os botões
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         menuInflater.inflate(R.menu.menu_main, menu)
-        if (ArrayNotes.notes.size == 0) {
+        /*
+        if (recycle_view.adapter?.itemCount == 0) {
             menu.getItem(0).isVisible = false
             menu.getItem(1).isVisible = false
 
@@ -62,6 +77,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
             recycle_view.isVisible = false
         }
         else {
+
             menu.getItem(0).isVisible = true
             menu.getItem(1).isVisible = true
 
@@ -70,6 +86,9 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
             recycle_view.isVisible = true
         }
+        */
+        label_no_note.isVisible = false
+        button_first_add.isVisible = false
         return true
     }
 
@@ -83,7 +102,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 return true
             }
             R.id.sort -> {
-                sortOptions()
+                //sortOptions()
                 return true
             }
             R.id.exit -> {
@@ -94,6 +113,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
     }
 
     //ordenando as notas
+    /*
     private fun sortOptions() {
         val alertDialog = AlertDialog.Builder(this)
 
@@ -130,13 +150,19 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
         alertDialog.create()
         alertDialog.show()
-    }
+    }*/
 
     //mostrando uma nota
     override fun onItemClicked(note: Note) {
+
         val intent = Intent(this, ExtendedNoteActivity::class.java)
-        intent.putExtra("noteId", ArrayNotes.notes.indexOf(note))
+        println("aaaaaaaaaaaaaaaaaa " + note.id)
+        println(noteViewModel.allNotes)
+        //println(note.id?.let { noteViewModel.getNoteById(it).value })
+        intent.putExtra("noteId", note.id)
         startActivity(intent)
+
+
     }
 
     //deletando nota
@@ -148,8 +174,14 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 dialog.dismiss()
             }
             .setPositiveButton(R.string.yes_dialog) { _,_ ->
-                ArrayNotes.notes.remove(note)
-                runAdapter()
+                noteViewModel.allNotes.observe(this, Observer { notes ->
+                    for (n : Note in notes){
+                        if (n.id == note.id){
+                            noteViewModel.delete(note)
+                        }
+                    }
+                })
+                //runAdapter()
             }
             .create()
             .show()

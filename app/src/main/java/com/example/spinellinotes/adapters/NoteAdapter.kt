@@ -7,11 +7,13 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.spinellinotes.R
-import com.example.spinellinotes.model.ArrayNotes
 import com.example.spinellinotes.model.Note
 import kotlinx.android.synthetic.main.cardview_item.view.*
 
-class NoteAdapter(private val itemClickListener: OnItemClickListener) : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+class NoteAdapter(private val itemClickListener: OnItemClickListener)
+    : RecyclerView.Adapter<NoteAdapter.NoteViewHolder>() {
+
+    private var notes = emptyList<Note>()
 
     //cria a lista de cards a partir do visual xml do cardview
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): NoteViewHolder {
@@ -23,12 +25,16 @@ class NoteAdapter(private val itemClickListener: OnItemClickListener) : Recycler
     //pega as informações do Array de Notas pra colocar no cardview por meio das
     //variáveis mapeadas no NoteViewHolder
     override fun onBindViewHolder(holder: NoteViewHolder, position: Int) {
-        val note = ArrayNotes.notes[position]
+        val note = notes[position]
         holder.bind(note, itemClickListener)
     }
 
-    override fun getItemCount() = ArrayNotes.notes.size
+    internal fun setNotes(notes: List<Note>) {
+        this.notes = notes
+        notifyDataSetChanged()
+    }
 
+    override fun getItemCount() = notes.size
 
     //classe ViewHolder pra mapear os dados do xml para o Adapter
     class NoteViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

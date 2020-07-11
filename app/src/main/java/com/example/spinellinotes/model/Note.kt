@@ -1,10 +1,19 @@
 package com.example.spinellinotes.model
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import java.util.*
 
-data class Note(val id: Int, var title: String = "", val resume: String,
-                val description: String, val background:Int,
-                val notifyDateTime: Calendar, val notify: String,
-                val createDate: Date = Date()
+@Entity(tableName = "note")
+class Note(
+    @PrimaryKey(autoGenerate = true) val id: Long?,
+    @ColumnInfo(name = "title") var title: String,
+    @ColumnInfo(name = "resume") val resume: String,
+    @ColumnInfo(name = "description") val description: String,
+    @ColumnInfo(name = "background") val background:Int,
+    //@ColumnInfo(name = "notify_date_time") val notifyDateTime: Calendar,
+    @ColumnInfo(name = "notify") val notify: String
+    //@ColumnInfo(name = "create_date") val createDate: Date = Date()
 
 )
