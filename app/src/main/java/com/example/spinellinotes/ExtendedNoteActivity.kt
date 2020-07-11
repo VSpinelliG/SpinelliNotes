@@ -34,6 +34,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
         supportActionBar?.apply { setDisplayShowHomeEnabled(true) }
 
         noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+
         note = noteViewModel.getNoteById(intent.getLongExtra("noteId", 0))
 
         setNote(note)
@@ -191,20 +192,23 @@ class ExtendedNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
 
-                    //passando os valores atualizados para o array
-                    noteViewModel.update(
-                        Note(
-                            note.id,
-                            title_extended_note.text.toString(),
-                            resume_extended_note.text.toString(),
-                            description_extended_note.text.toString(),
-                            background,
-                            button_notify_extended_note.text.toString()
-                            //calendar,
-                            //ArrayNotes.notes[id].createDate
-                        )
-                    )
-
+                    //passando os valores atualizados
+                    Thread(Runnable {
+                        runOnUiThread {
+                            noteViewModel.update(
+                                Note(
+                                    note.id,
+                                    title_extended_note.text.toString(),
+                                    resume_extended_note.text.toString(),
+                                    description_extended_note.text.toString(),
+                                    background,
+                                    button_notify_extended_note.text.toString()
+                                    //calendar,
+                                    //ArrayNotes.notes[id].createDate
+                                )
+                            )
+                        }
+                    }).start()
                     finish()
                 }
                 return true
