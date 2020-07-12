@@ -13,6 +13,8 @@ class Note(
     @ColumnInfo(name = "description") val description: String?,
     @ColumnInfo(name = "background") val background:Int,
     @ColumnInfo(name = "notify_date_time") val notifyDateTime: Calendar,
+    @ColumnInfo(name = "has_value_date") val hasValueDate: Boolean,
+    @ColumnInfo(name = "has_value_time") val hasValueTime: Boolean,
     @ColumnInfo(name = "notify") val notify: String?,
     @ColumnInfo(name = "create_date") val createDate: Date = Date()
 
