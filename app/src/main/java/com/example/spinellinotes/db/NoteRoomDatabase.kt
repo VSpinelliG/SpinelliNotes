@@ -1,13 +1,14 @@
 package com.example.spinellinotes.db
 
 import android.content.Context
-import androidx.room.Database
-import androidx.room.Room
-import androidx.room.RoomDatabase
+import androidx.room.*
+import androidx.room.migration.Migration
 import com.example.spinellinotes.dao.NoteDao
+import com.example.spinellinotes.model.Converters
 import com.example.spinellinotes.model.Note
 
 @Database(entities = [Note::class], version = 1, exportSchema = false)
+@TypeConverters(Converters::class)
 abstract class NoteRoomDatabase : RoomDatabase() {
 
     abstract fun noteDao(): NoteDao
@@ -28,7 +29,10 @@ abstract class NoteRoomDatabase : RoomDatabase() {
                     context.applicationContext,
                     NoteRoomDatabase::class.java,
                     "note"
-                ).allowMainThreadQueries().build()
+                )
+                    .allowMainThreadQueries()
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 return instance
             }

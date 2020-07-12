@@ -1,6 +1,5 @@
 package com.example.spinellinotes
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -11,7 +10,6 @@ import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioButton
 import android.widget.Toast
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.example.spinellinotes.model.Note
 import com.example.spinellinotes.viewmodel.NoteViewModel
@@ -23,7 +21,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
 
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var note:Note
-    //private lateinit var calendar:Calendar
+    private var calendar: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,10 +36,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
         note = noteViewModel.getNoteById(intent.getLongExtra("noteId", 0))
 
         setNote(note)
-
-        //setDateAndTime()
-
-        setNoteColor()
 
     }
 
@@ -69,11 +63,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
             button_notify_extended_note.text = note.notify
         }
 
-        //colocando os valores de data e hora no label dos botões referentes
-        //this.calendar = note.notifyDateTime
-        //button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
-        //button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
-
         //retirando linha dos campos edittext
         title_extended_note.background = null
         resume_extended_note.background = null
@@ -87,14 +76,21 @@ class ExtendedNoteActivity : AppCompatActivity() {
             Color.parseColor(this.resources.getString(R.string.parse_green)) -> green_extended_note.isChecked = true
             else -> pink_extended_note.isChecked = true
         }
+
+        setDateAndTime()
+
+        setNoteColor()
     }
 
     //método para caso o usuário mude os valores de data ou hora
-    /*
-    @SuppressLint("NewApi")
     private fun setDateAndTime() {
+
         val locale = Locale("pt", "BR")
         Locale.setDefault(locale)
+
+        //colocando os valores de data e hora no label dos botões referentes
+        calendar = note.notifyDateTime
+        println(calendar)
 
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         val month = calendar.get(Calendar.MONTH)
@@ -102,25 +98,30 @@ class ExtendedNoteActivity : AppCompatActivity() {
         val minute = calendar.get(Calendar.MINUTE)
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
 
+        button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
+        button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
+
         button_date_extended_note.setOnClickListener {
             val datePickerListener =
-                DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                    calendar.set(year, month, day, hour, minute, 0)
+                DatePickerDialog.OnDateSetListener { _, y, m, d ->
+                    calendar.set(Calendar.YEAR, y)
+                    calendar.set(Calendar.MONTH, m)
+                    calendar.set(Calendar.DAY_OF_MONTH, d)
 
                     val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
                     button_date_extended_note.text = dateFormat.format(calendar.time)
                 }
-            DatePickerDialog(this, datePickerListener, year, month, day).show()
+                DatePickerDialog(this, datePickerListener, year, month, day).show()
         }
 
         button_time_extended_note.setOnClickListener{
             val timePickerListener =
-                TimePickerDialog.OnTimeSetListener{ _, hour, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hour)
-                    calendar.set(Calendar.MINUTE, minute)
+                TimePickerDialog.OnTimeSetListener{ _, h, m ->
+                    calendar.set(Calendar.HOUR_OF_DAY, h)
+                    calendar.set(Calendar.MINUTE, m)
                     button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
                 }
-            TimePickerDialog(this, timePickerListener, hour, minute, true).show()
+                TimePickerDialog(this, timePickerListener, hour, minute, true).show()
         }
 
         button_notify_extended_note.setOnClickListener{
@@ -144,8 +145,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
             alertDialog.create()
         }
     }
-
-     */
 
     //método para caso o usuário mude a cor da nota
     private fun setNoteColor() {
@@ -202,9 +201,9 @@ class ExtendedNoteActivity : AppCompatActivity() {
                                     resume_extended_note.text.toString(),
                                     description_extended_note.text.toString(),
                                     background,
-                                    button_notify_extended_note.text.toString()
-                                    //calendar,
-                                    //ArrayNotes.notes[id].createDate
+                                    calendar,
+                                    button_notify_extended_note.text.toString(),
+                                    note.createDate
                                 )
                             )
                         }

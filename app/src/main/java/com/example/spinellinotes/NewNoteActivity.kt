@@ -1,6 +1,5 @@
 package com.example.spinellinotes
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
@@ -20,7 +19,7 @@ import java.util.*
 
 class NewNoteActivity : AppCompatActivity() {
 
-    private val calendar: Calendar = Calendar.getInstance()
+    private var calendar: Calendar = Calendar.getInstance()
     private lateinit var noteViewModel: NoteViewModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,10 +58,11 @@ class NewNoteActivity : AppCompatActivity() {
     }
 
     //pegando os valores de data e hora
-    @SuppressLint("NewApi")
     private fun setDateAndTime() {
+
         val locale = Locale("pt", "BR")
         Locale.setDefault(locale)
+
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         val month = calendar.get(Calendar.MONTH)
         val year = calendar.get(Calendar.YEAR)
@@ -71,8 +71,10 @@ class NewNoteActivity : AppCompatActivity() {
 
         button_date_new_note.setOnClickListener {
             val datePickerListener =
-                DatePickerDialog.OnDateSetListener { _, year, month, day ->
-                    calendar.set(year, month, day, hour, minute, 0)
+                DatePickerDialog.OnDateSetListener { _, y, m, d ->
+                    calendar.set(Calendar.YEAR, y)
+                    calendar.set(Calendar.MONTH, m)
+                    calendar.set(Calendar.DAY_OF_MONTH, d)
 
                     val dateFormat = DateFormat.getDateInstance(DateFormat.MEDIUM)
                     button_date_new_note.text = dateFormat.format(calendar.time)
@@ -82,9 +84,9 @@ class NewNoteActivity : AppCompatActivity() {
 
         button_time_new_note.setOnClickListener{
             val timePickerListener =
-                TimePickerDialog.OnTimeSetListener{_, hour, minute ->
-                    calendar.set(Calendar.HOUR_OF_DAY, hour)
-                    calendar.set(Calendar.MINUTE, minute)
+                TimePickerDialog.OnTimeSetListener{_, h, m ->
+                    calendar.set(Calendar.HOUR_OF_DAY, h)
+                    calendar.set(Calendar.MINUTE, m)
                     button_time_new_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
                 }
             TimePickerDialog(this, timePickerListener, hour, minute, true).show()
@@ -140,13 +142,14 @@ class NewNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
 
-                    //adicionando nota ao array
+                    //adicionando nota
                     noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
+
                     noteViewModel.insert(
                         Note(
                             null, title_new_note.text.toString(),
                             resume_new_note.text.toString(), description_new_note.text.toString(),
-                            background, /*calendar,*/ button_notify_new_note.text.toString()//, Date()
+                            background, calendar, button_notify_new_note.text.toString(), Date()
                         )
                     )
                     finish()
