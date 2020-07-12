@@ -16,6 +16,8 @@
     <string name="notify_default_2">10 minutos antes</string>
 
     <!--Nova nota e nota extendida !-->
+    <string name="new_note">Nova Nota</string>
+    <string name="note">Nota</string>
     <string name="title">Título</string>
     <string name="resume">Resumo</string>
     <string name="description">Descrição</string>
