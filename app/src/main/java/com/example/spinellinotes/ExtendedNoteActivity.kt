@@ -59,9 +59,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
             description_extended_note.setText(note.description)
             description_extended_note.setSelection(description_extended_note.text.length)
         }
-        if (note.notify != this.resources.getString(R.string.notify_default_0)){
-            button_notify_extended_note.text = note.notify
-        }
 
         //retirando linha dos campos edittext
         title_extended_note.background = null
@@ -88,6 +85,17 @@ class ExtendedNoteActivity : AppCompatActivity() {
         val locale = Locale("pt", "BR")
         Locale.setDefault(locale)
 
+        if (note.hasValueDate) {
+            button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
+        }
+
+        if (note.hasValueTime){
+            button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
+        }
+        if (note.notify != this.resources.getString(R.string.notify)){
+            button_notify_extended_note.text = note.notify
+        }
+
         //colocando os valores de data e hora no label dos botões referentes
         calendar = note.notifyDateTime
         println(calendar)
@@ -98,8 +106,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
         val minute = calendar.get(Calendar.MINUTE)
         val hour = calendar.get(Calendar.HOUR_OF_DAY)
 
-        button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
-        button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
 
         button_date_extended_note.setOnClickListener {
             val datePickerListener =
@@ -191,6 +197,17 @@ class ExtendedNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
 
+                    var hasDate = false
+                    var hasTime = false
+
+                    //verificando se foi passado data e hora e se
+                    if (button_date_extended_note.text != this.resources.getString(R.string.date)) {
+                        hasDate = true
+                    }
+                    if (button_time_extended_note.text != this.resources.getString(R.string.time)) {
+                        hasTime = true
+                    }
+
                     //passando os valores atualizados
                     Thread(Runnable {
                         runOnUiThread {
@@ -202,6 +219,8 @@ class ExtendedNoteActivity : AppCompatActivity() {
                                     description_extended_note.text.toString(),
                                     background,
                                     calendar,
+                                    hasDate,
+                                    hasTime,
                                     button_notify_extended_note.text.toString(),
                                     note.createDate
                                 )

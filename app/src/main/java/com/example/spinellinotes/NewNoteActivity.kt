@@ -1,10 +1,11 @@
 package com.example.spinellinotes
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.*
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
+import android.os.SystemClock
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioButton
@@ -126,11 +127,16 @@ class NewNoteActivity : AppCompatActivity() {
 
         when (item.itemId) {
             R.id.save -> {
-                if (title_new_note.text.toString() == "") Toast.makeText(this, R.string.required_title, Toast.LENGTH_SHORT).show() else {
-                    /*var id = 0
-                    if (ArrayNotes.notes.size != 0) {
-                        id = ArrayNotes.notes.size
-                    }*/
+                if (title_new_note.text.toString() == "") {
+                    Toast.makeText(this, R.string.required_title, Toast.LENGTH_SHORT).show()
+                }
+                else if (button_notify_new_note.text != this.resources.getString(R.string.notify)
+                        && button_date_new_note.text == this.resources.getString(R.string.date)
+                        && button_time_new_note.text == this.resources.getString(R.string.time)) {
+
+                        Toast.makeText(this, R.string.required_date_time, Toast.LENGTH_SHORT).show()
+                }
+                else {
 
                     //pegando a cor selecionada pelo usuário ao confirmar a criação
                     val radioButton = findViewById<RadioButton>(radio_group_new_note.checkedRadioButtonId)
@@ -145,11 +151,29 @@ class NewNoteActivity : AppCompatActivity() {
                     //adicionando nota
                     noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
+                    var hasDate = false
+                    var hasTime = false
+
+                    //verificando se foi passado data e hora
+                    if (button_date_new_note.text != this.resources.getString(R.string.date)) {
+                        hasDate = true
+                    }
+                    if (button_time_new_note.text != this.resources.getString(R.string.time)) {
+                        hasTime = true
+                    }
+
                     noteViewModel.insert(
                         Note(
-                            null, title_new_note.text.toString(),
-                            resume_new_note.text.toString(), description_new_note.text.toString(),
-                            background, calendar, button_notify_new_note.text.toString(), Date()
+                            null,
+                            title_new_note.text.toString(),
+                            resume_new_note.text.toString(),
+                            description_new_note.text.toString(),
+                            background,
+                            calendar,
+                            hasDate,
+                            hasTime,
+                            button_notify_new_note.text.toString(),
+                            Date()
                         )
                     )
                     finish()
