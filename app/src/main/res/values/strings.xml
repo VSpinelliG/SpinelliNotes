@@ -38,5 +38,6 @@
     <!-- Toast !-->
     <string name="error_sort">Erro ao ordenar nesta categoria.</string>
     <string name="required_title">Título é obrigatório!</string>
+    <string name="required_date_time">Informe a data e hora!</string>
     <string name="error_select_color">Problema com a cor.</string>
 </resources>
