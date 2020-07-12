@@ -17,7 +17,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
-            app:title="Nova Nota"
+            app:title="@string/new_note"
             app:titleTextColor="@color/white"
             android:elevation="4dp"
             android:theme="@style/AppTheme"
