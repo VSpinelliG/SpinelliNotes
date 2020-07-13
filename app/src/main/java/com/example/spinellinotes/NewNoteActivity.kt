@@ -5,7 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
-import android.os.SystemClock
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.RadioButton
@@ -153,6 +152,7 @@ class NewNoteActivity : AppCompatActivity() {
 
                     var hasDate = false
                     var hasTime = false
+                    var broadcastCode: Long? = null
 
                     //verificando se foi passado data e hora
                     if (button_date_new_note.text != this.resources.getString(R.string.date)) {
@@ -160,6 +160,15 @@ class NewNoteActivity : AppCompatActivity() {
                     }
                     if (button_time_new_note.text != this.resources.getString(R.string.time)) {
                         hasTime = true
+                    }
+
+                    //criando a notificação
+                    if (button_notify_new_note.text != this.resources.getString(R.string.notify)) {
+                        //criando um "id" para cada broadcast ser único e possibilitar
+                        //multiplas notificações
+                        broadcastCode = System.currentTimeMillis()
+
+                        scheduleNotification(broadcastCode)
                     }
 
                     noteViewModel.insert(
@@ -173,6 +182,7 @@ class NewNoteActivity : AppCompatActivity() {
                             hasDate,
                             hasTime,
                             button_notify_new_note.text.toString(),
+                            broadcastCode,
                             Date()
                         )
                     )
@@ -182,6 +192,22 @@ class NewNoteActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun scheduleNotification(broadcastCode: Long?) {
+
+        if (broadcastCode != null) {
+            val intent = Intent("NOTIFY")
+            intent.putExtra("title", title_new_note.text.toString())
+
+            val pIntent = PendingIntent.getBroadcast(this,
+                broadcastCode.toInt(), intent, 0)
+            val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+
+            calendar.set(Calendar.SECOND, 0)
+
+            alarm.setExact(AlarmManager.RTC_WAKEUP, calendar.timeInMillis, pIntent)
+        }
     }
 
 }

@@ -1,8 +1,8 @@
 package com.example.spinellinotes
 
-import android.app.AlertDialog
-import android.app.DatePickerDialog
-import android.app.TimePickerDialog
+import android.app.*
+import android.content.Context
+import android.content.Intent
 import android.graphics.Color
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -14,6 +14,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.example.spinellinotes.model.Note
 import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_extended_note.*
+import kotlinx.android.synthetic.main.activity_new_note.*
 import java.text.DateFormat
 import java.util.*
 
@@ -21,6 +22,7 @@ class ExtendedNoteActivity : AppCompatActivity() {
 
     private lateinit var noteViewModel: NoteViewModel
     private lateinit var note:Note
+    //private var hasNotifyDisabled = false
     private var calendar: Calendar = Calendar.getInstance()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -85,6 +87,10 @@ class ExtendedNoteActivity : AppCompatActivity() {
         val locale = Locale("pt", "BR")
         Locale.setDefault(locale)
 
+        //colocando os valores de data e hora no label dos botões referentes
+        calendar = note.notifyDateTime
+        println(calendar)
+
         if (note.hasValueDate) {
             button_date_extended_note.text = DateFormat.getDateInstance(DateFormat.DEFAULT).format(calendar.time)
         }
@@ -92,13 +98,10 @@ class ExtendedNoteActivity : AppCompatActivity() {
         if (note.hasValueTime){
             button_time_extended_note.text = DateFormat.getTimeInstance(DateFormat.SHORT).format(calendar.time)
         }
+
         if (note.notify != this.resources.getString(R.string.notify)){
             button_notify_extended_note.text = note.notify
         }
-
-        //colocando os valores de data e hora no label dos botões referentes
-        calendar = note.notifyDateTime
-        println(calendar)
 
         val day = calendar.get(Calendar.DAY_OF_MONTH)
         val month = calendar.get(Calendar.MONTH)
@@ -199,13 +202,35 @@ class ExtendedNoteActivity : AppCompatActivity() {
 
                     var hasDate = false
                     var hasTime = false
+                    var broadcastCode = note.broadcastCode
 
-                    //verificando se foi passado data e hora e se
+                    //verificando se foi passado data e hora
                     if (button_date_extended_note.text != this.resources.getString(R.string.date)) {
                         hasDate = true
                     }
                     if (button_time_extended_note.text != this.resources.getString(R.string.time)) {
                         hasTime = true
+                    }
+
+                    //verificando se a notificação foi desativada
+                    //caso tenha sido, será cancelado o alarm
+                    if (button_notify_extended_note.text == this.resources.getString(R.string.notify)
+                        && broadcastCode != null){
+
+                        val intent = Intent("NOTIFY")
+                        intent.putExtra("title", note.title)
+
+                        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val pIntent = PendingIntent.getBroadcast(this,
+                            broadcastCode.toInt(), intent, PendingIntent.FLAG_NO_CREATE)
+                        if (pIntent != null) {
+                            alarm.cancel(pIntent)
+                        }
+
+                        Toast.makeText(this, R.string.notify_cancel, Toast.LENGTH_SHORT).show()
+
+                        //cancelando a notificação
+                        broadcastCode = null
                     }
 
                     //passando os valores atualizados
@@ -222,11 +247,13 @@ class ExtendedNoteActivity : AppCompatActivity() {
                                     hasDate,
                                     hasTime,
                                     button_notify_extended_note.text.toString(),
+                                    broadcastCode,
                                     note.createDate
                                 )
                             )
                         }
                     }).start()
+
                     finish()
                 }
                 return true
