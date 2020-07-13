@@ -27,6 +27,13 @@
             </intent-filter>
         </activity>
         <activity android:name=".MainActivity" />
+        <receiver android:name=".alarm.AlarmReceiver">
+            <intent-filter>
+                <action android:name="NOTIFY" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
