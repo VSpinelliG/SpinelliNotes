@@ -16,6 +16,7 @@ class Note(
     @ColumnInfo(name = "has_value_date") val hasValueDate: Boolean,
     @ColumnInfo(name = "has_value_time") val hasValueTime: Boolean,
     @ColumnInfo(name = "notify") val notify: String?,
+    @ColumnInfo(name = "broadcast_Code") val broadcastCode: Long?,
     @ColumnInfo(name = "create_date") val createDate: Date = Date()
 
 )
