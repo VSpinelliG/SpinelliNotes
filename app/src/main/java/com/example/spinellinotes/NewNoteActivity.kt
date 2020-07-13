@@ -16,6 +16,7 @@ import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_new_note.*
 import java.text.DateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 class NewNoteActivity : AppCompatActivity() {
 
@@ -105,6 +106,40 @@ class NewNoteActivity : AppCompatActivity() {
                         default1 -> button_notify_new_note.text =  default1
                         else -> button_notify_new_note.text = default2
                     }
+                    var millis = calendar.timeInMillis - System.currentTimeMillis()
+                    var notifyLabel: String = ""
+
+                    //comparar se o tempo é menor que uma hora
+                    if (TimeUnit.MILLISECONDS.toMinutes(millis) < 60){
+                        notifyLabel = String.format("Definido para %02d min.",
+                            TimeUnit.MILLISECONDS.toMinutes(millis))
+                    }
+                    //comparar se o tempo é menor que um dia
+                    else if (TimeUnit.MILLISECONDS.toDays(millis) < 1) {
+                        notifyLabel = String.format("Definido para %02d hora(s) e %02d min.",
+                            TimeUnit.MILLISECONDS.toHours(millis),
+                            TimeUnit.MILLISECONDS.toMinutes(millis) -
+                                TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(millis)))
+                    }
+                    //comparar se o tempo é menor que um mês
+                    else if (TimeUnit.MILLISECONDS.toDays(millis) < 31) {
+                        notifyLabel = String.format("Definido para %02d dias.",
+                            TimeUnit.MILLISECONDS.toDays(millis))
+                    }
+                    //comparar se o tempo é menor que um ano
+                    else if (TimeUnit.MILLISECONDS.toDays(millis) < 365){
+                        notifyLabel = String.format("Definido para %02d mes(es).",
+                            TimeUnit.MILLISECONDS.toDays(millis)/31)
+                    }
+                    //se o tempo for maior que um ano
+                    else{
+                        notifyLabel = String.format("Definido para %02d ano(s).",
+                            TimeUnit.MILLISECONDS.toDays(millis)/365)
+                    }
+
+
+
+                    Toast.makeText(this, notifyLabel , Toast.LENGTH_LONG).show()
                 }
                 .setNegativeButton(R.string.cancel_dialog){dialog,_ ->
                     dialog.dismiss()
