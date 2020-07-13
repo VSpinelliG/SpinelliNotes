@@ -15,6 +15,9 @@
     <string name="notify_default_1">5 minutos antes</string>
     <string name="notify_default_2">10 minutos antes</string>
 
+    <!--Notificação!-->
+    <string name="default_value_title">Notificação de nota</string>
+
     <!--Nova nota e nota extendida !-->
     <string name="new_note">Nova Nota</string>
     <string name="note">Nota</string>
@@ -39,5 +42,6 @@
     <string name="error_sort">Erro ao ordenar nesta categoria.</string>
     <string name="required_title">Título é obrigatório!</string>
     <string name="required_date_time">Informe a data e hora!</string>
-    <string name="error_select_color">Problema com a cor.</string>
+    <string name="error_select_color">Problema com a cor!</string>
+    <string name="notify_cancel">Notificação cancelada!</string>
 </resources>
