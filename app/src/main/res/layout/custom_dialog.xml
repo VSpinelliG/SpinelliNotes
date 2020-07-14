@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingBottom="4dp"
+        tools:ignore="UselessParent"
+        android:background="@color/white">
+
+        <TextView
+            android:id="@+id/title_custom_dialog"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/notify_dialog"
+            android:textColor="@color/black"
+            android:textSize="20sp"
+            android:layout_marginBottom="30dp"/>
+
+        <EditText
+            android:id="@+id/time_notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/time_before"
+            android:layout_below="@+id/title_custom_dialog"
+            android:focusable="true"
+            android:inputType="number"
+            android:autofillHints="false"
+            android:layout_marginBottom="30dp"/>
+
+        <RadioGroup
+            android:id="@+id/radio_group_notify"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/time_notify"
+            android:layout_marginBottom="30dp">
+
+            <RadioButton
+                android:id="@+id/minute_notify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="true"
+                android:text="@string/notify_minute_before"
+                android:layout_marginBottom="10dp"/>
+
+            <RadioButton
+                android:id="@+id/hour_notify"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/notify_hour_before"/>
+
+        </RadioGroup>
+
+        <Button
+            android:id="@+id/confirm_notify"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/radio_group_notify"
+            android:layout_alignParentEnd="true"
+            android:text="@string/confirm_dialog"
+            android:textStyle="bold"
+            android:textColor="@color/colorAccent"
+            style="?android:attr/borderlessButtonStyle"/>
+
+    </RelativeLayout>
+
+</LinearLayout>
