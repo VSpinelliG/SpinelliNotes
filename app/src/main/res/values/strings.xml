@@ -8,15 +8,23 @@
     <string name="message_dialog_delete">Deseja realmente apagar esta nota?</string>
     <string name="title_dialog_sort">Ordenar por</string>
     <string name="yes_dialog">Sim</string>
+    <string name="confirm_dialog">Confirmar</string>
     <string name="no_dialog">Não</string>
     <string name="cancel_dialog">Cancelar</string>
     <string name="notify_dialog">Notificação</string>
     <string name="notify_default_0">Não nofiticar</string>
-    <string name="notify_default_1">5 minutos antes</string>
-    <string name="notify_default_2">10 minutos antes</string>
+    <string name="notify_default_1">Notificar no horário</string>
+    <string name="notify_default_2">Personalizar</string>
+    <string name="notify_minute_before">minutos antes</string>
+    <string name="notify_hour_before">horas antes</string>
+    <string name="notify_minute">minutos</string>
+    <string name="notify_hour">horas</string>
+    <string name="time_before">Digite o tempo</string>
 
     <!--Notificação!-->
     <string name="default_value_title">Notificação de nota</string>
+    <string name="notify_remaining_new">Notificação será feita em</string>
+    <string name="notify_remaining_extended">Notificação atualizada para</string>
 
     <!--Nova nota e nota extendida !-->
     <string name="new_note">Nova Nota</string>
@@ -45,4 +53,5 @@
     <string name="error_select_color">Problema com a cor!</string>
     <string name="notify_cancel">Notificação cancelada!</string>
     <string name="notify_invalid">Data e/ou Horário inválido(s)!</string>
+    <string name="time_value_invalid">Informe um valor de tempo!</string>
 </resources>
