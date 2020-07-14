@@ -1,5 +1,8 @@
 package com.example.spinellinotes
 
+import android.app.AlarmManager
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
@@ -177,6 +180,19 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 noteViewModel.allNotes.observe(this, Observer { notes ->
                     for (n : Note in notes){
                         if (n.id == note.id){
+                            //verificando se há notificação
+                            //caso haja, deverá ser excluída tbm
+                            if (n.broadcastCode != null) {
+                                val intent = Intent("NOTIFY")
+                                intent.putExtra("title", n.title)
+
+                                val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                                val pIntent = PendingIntent.getBroadcast(this,
+                                    n.broadcastCode.toInt(), intent, PendingIntent.FLAG_NO_CREATE)
+                                if (pIntent != null) {
+                                    alarm.cancel(pIntent)
+                                }
+                            }
                             noteViewModel.delete(note)
                         }
                     }
