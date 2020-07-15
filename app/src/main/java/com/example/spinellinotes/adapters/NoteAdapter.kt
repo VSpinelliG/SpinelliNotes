@@ -60,7 +60,6 @@ class NoteAdapter(private val itemClickListener: OnItemClickListener)
                     clickListener.onDeleteClicked(note)
                 }
             }
-
             itemView.setBackgroundColor(note.background)
         }
 
