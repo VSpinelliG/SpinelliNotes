@@ -20,6 +20,11 @@
     <string name="notify_minute">minutos</string>
     <string name="notify_hour">horas</string>
     <string name="time_before">Digite o tempo</string>
+    <string name="sort_id">Alfabética</string>
+    <string name="sort_id_desc">Alfabética-invertida</string>
+    <string name="sort_alpha">Ordem de criação</string>
+    <string name="sort_alpha_desc">Recentes</string>
+
 
     <!--Notificação!-->
     <string name="default_value_title">Notificação de nota</string>
@@ -40,6 +45,7 @@
     <string name="date">Data</string>
     <string name="time">Horário</string>
     <string name="notify">Notificar</string>
+    <string name="create_data">Criado em:</string>
 
     <string name="parse_yellow">YELLOW</string>
     <string name="parse_gray">LIGHTGRAY</string>
@@ -47,6 +53,9 @@
     <string name="parse_pink">MAGENTA</string>
 
     <!-- Toast !-->
+    <string name="error_insert">Erro ao cadastrar nota!</string>
+    <string name="error_update">Erro ao atualizar nota!</string>
+    <string name="error_delete">Erro ao deletar nota!</string>
     <string name="error_sort">Erro ao ordenar nesta categoria.</string>
     <string name="required_title">Título é obrigatório!</string>
     <string name="required_date_time">Informe a data e hora!</string>
