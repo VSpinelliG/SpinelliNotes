@@ -11,10 +11,10 @@ import android.view.MenuItem
 import android.view.Window
 import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.lifecycle.ViewModelProvider
+import com.example.spinellinotes.db.NoteRoomDatabase
 import com.example.spinellinotes.model.Note
-import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_new_note.*
+import java.lang.Exception
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -22,7 +22,6 @@ import java.util.concurrent.TimeUnit
 class NewNoteActivity : AppCompatActivity() {
 
     private var calendar: Calendar = Calendar.getInstance()
-    private lateinit var noteViewModel: NoteViewModel
     private var decrementTime:Long = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -72,12 +71,10 @@ class NewNoteActivity : AppCompatActivity() {
                         else -> Color.parseColor(this.resources.getString(R.string.parse_pink))
                     }
 
-                    //adicionando nota
-                    noteViewModel = ViewModelProvider(this)[NoteViewModel::class.java]
 
                     var hasDate = false
                     var hasTime = false
-                    var broadcastCode: Long? = null
+                    val broadcastCode = System.currentTimeMillis()/1000
 
                     //verificando se foi passado data e hora
                     if (button_date_new_note.text != this.resources.getString(R.string.date)) {
@@ -87,17 +84,10 @@ class NewNoteActivity : AppCompatActivity() {
                         hasTime = true
                     }
 
-                    //criando a notificação
-                    if (button_notify_new_note.text != this.resources.getString(R.string.notify)) {
-                        //criando um "id" para cada broadcast ser único e possibilitar
-                        //multiplas notificações
-                        broadcastCode = System.currentTimeMillis()
+                    val db = NoteRoomDatabase.getDatabase(this)
 
-                        scheduleNotification(broadcastCode)
-                    }
-
-                    noteViewModel.insert(
-                        Note(
+                    try {
+                        val note = Note(
                             null,
                             title_new_note.text.toString(),
                             resume_new_note.text.toString(),
@@ -110,8 +100,20 @@ class NewNoteActivity : AppCompatActivity() {
                             broadcastCode,
                             Date()
                         )
-                    )
-                    finish()
+                        val id = db.noteDao().addNote(note)
+
+                        //criando a notificação
+                        if (button_notify_new_note.text != this.resources.getString(R.string.notify)) {
+
+                            //criando um "id" para cada broadcast ser único e possibilitar
+                            //multiplas notificações
+                            scheduleNotification(broadcastCode, id)
+                        }
+                    }catch (e: Exception){
+                        Toast.makeText(this, R.string.error_insert, Toast.LENGTH_LONG).show()
+                    }finally {
+                        finish()
+                    }
                 }
                 return true
             }
@@ -294,11 +296,18 @@ class NewNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun scheduleNotification(broadcastCode: Long?) {
+    private fun scheduleNotification(broadcastCode: Long?, id: Long) {
 
         if (broadcastCode != null) {
             val intent = Intent("NOTIFY")
+            intent.putExtra("id", broadcastCode.toInt())
+            intent.putExtra("noteId", id)
             intent.putExtra("title", title_new_note.text.toString())
+            //caso haja resumo, o título da notificação será o próprio título da nota e o corpo será o resumo
+            //casonão haja, o título da notificação será o nome do app e o corpo será o título da nota
+            if (resume_new_note.text.toString() != "") {
+                intent.putExtra("resume", resume_new_note.text.toString())
+            }
 
             val pIntent = PendingIntent.getBroadcast(this,
                 broadcastCode.toInt(), intent, 0)

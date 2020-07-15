@@ -7,31 +7,37 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.spinellinotes.adapters.NoteAdapter
+import com.example.spinellinotes.db.NoteRoomDatabase
 import com.example.spinellinotes.model.Note
-import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
-    private lateinit var noteViewModel: NoteViewModel
+    private lateinit var notes: LiveData<List<Note>>
+    private lateinit var db:NoteRoomDatabase
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+        //noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+
+        db = NoteRoomDatabase.getDatabase(this)
+
+        notes = db.noteDao().getAllNotes()
 
         runAdapter()
 
-        /*
         //quando não há nenhuma nota
+        /*
         if (button_first_add.isVisible) {
             button_first_add.setOnClickListener {
                 val intent = Intent(this, NewNoteActivity::class.java)
@@ -43,10 +49,12 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
     }
 
     //após criar uma nota, a main é continuada
-    /*override fun onRestart() {
+    /*
+    override fun onRestart() {
         runAdapter()
         super.onRestart()
-    }*/
+    }
+     */
 
     //renderiza o recycler view (usado a cada criação, ordenação e exclusão de nota)
     //e define o toolbar criado para esta activity
@@ -56,7 +64,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
         val adapter = NoteAdapter(this)
         recycle_view.adapter = adapter
 
-        noteViewModel.allNotes.observe(this, Observer { notes ->
+        notes.observe(this, Observer { notes ->
             notes?.let { adapter.setNotes(it) }
         })
 
@@ -69,27 +77,6 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
 
         menuInflater.inflate(R.menu.menu_main, menu)
-        /*
-        if (recycle_view.adapter?.itemCount == 0) {
-            menu.getItem(0).isVisible = false
-            menu.getItem(1).isVisible = false
-
-            label_no_note.isVisible = true
-            button_first_add.isVisible = true
-
-            recycle_view.isVisible = false
-        }
-        else {
-
-            menu.getItem(0).isVisible = true
-            menu.getItem(1).isVisible = true
-
-            label_no_note.isVisible = false
-            button_first_add.isVisible = false
-
-            recycle_view.isVisible = true
-        }
-        */
         label_no_note.isVisible = false
         button_first_add.isVisible = false
         return true
@@ -105,7 +92,7 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 return true
             }
             R.id.sort -> {
-                //sortOptions()
+                sortOptions()
                 return true
             }
             R.id.exit -> {
@@ -116,7 +103,6 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
     }
 
     //ordenando as notas
-    /*
     private fun sortOptions() {
         val alertDialog = AlertDialog.Builder(this)
 
@@ -127,11 +113,12 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
             dialog.dismiss()
         }
 
-        val title:String = this.resources.getString(R.string.title)
-        val resume:String = this.resources.getString(R.string.resume)
-        val description:String = this.resources.getString(R.string.description)
+        val creation:String = this.resources.getString(R.string.sort_id)
+        val creationDesc:String = this.resources.getString(R.string.sort_id_desc)
+        val alpha:String = this.resources.getString(R.string.sort_alpha)
+        val alphaDesc = this.resources.getString(R.string.sort_alpha_desc)
 
-        val array = arrayOf(title, resume, description)
+        val array = arrayOf(creation, creationDesc, alpha, alphaDesc)
 
         alertDialog.setItems(array) { dialog, which ->
 
@@ -139,10 +126,11 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
             //seleciona por qual categoria irá ordenar
             try {
-                when (option) {
-                    title -> ArrayNotes.notes.sortWith(compareBy { it.title })
-                    resume -> ArrayNotes.notes.sortWith(compareBy { it.resume })
-                    else -> ArrayNotes.notes.sortWith(compareBy { it.description })
+                notes = when (option) {
+                    this.resources.getString(R.string.sort_id) -> db.noteDao().getAllNotes()
+                    this.resources.getString(R.string.sort_id_desc) -> db.noteDao().getAllNotesDesc()
+                    this.resources.getString(R.string.sort_alpha) -> db.noteDao().getAllNotesAlpha()
+                    else -> db.noteDao().getAllNotesAlphaDesc()
                 }
                 dialog.dismiss()
                 runAdapter()
@@ -153,18 +141,14 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
 
         alertDialog.create()
         alertDialog.show()
-    }*/
+    }
 
     //mostrando uma nota
     override fun onItemClicked(note: Note) {
 
         val intent = Intent(this, ExtendedNoteActivity::class.java)
-        println("aaaaaaaaaaaaaaaaaa " + note.id)
-        println(noteViewModel.allNotes)
-        //println(note.id?.let { noteViewModel.getNoteById(it).value })
         intent.putExtra("noteId", note.id)
         startActivity(intent)
-
 
     }
 
@@ -177,26 +161,22 @@ class MainActivity : AppCompatActivity(), NoteAdapter.OnItemClickListener {
                 dialog.dismiss()
             }
             .setPositiveButton(R.string.yes_dialog) { _,_ ->
-                noteViewModel.allNotes.observe(this, Observer { notes ->
-                    for (n : Note in notes){
-                        if (n.id == note.id){
-                            //verificando se há notificação
-                            //caso haja, deverá ser excluída tbm
-                            if (n.broadcastCode != null) {
-                                val intent = Intent("NOTIFY")
-                                intent.putExtra("title", n.title)
-
-                                val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-                                val pIntent = PendingIntent.getBroadcast(this,
-                                    n.broadcastCode.toInt(), intent, PendingIntent.FLAG_NO_CREATE)
-                                if (pIntent != null) {
-                                    alarm.cancel(pIntent)
-                                }
-                            }
-                            noteViewModel.delete(note)
+                //verificando se há notificação
+                //caso haja, deverá ser excluída tbm
+                try {
+                    if (note.broadcastCode != null) {
+                        val intent = Intent("NOTIFY")
+                        val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                        val pIntent = PendingIntent.getBroadcast(this,
+                            note.broadcastCode.toInt(), intent, PendingIntent.FLAG_NO_CREATE)
+                        if (pIntent != null) {
+                            alarm.cancel(pIntent)
                         }
                     }
-                })
+                    db.noteDao().deleteNote(note)
+                }catch (e: Exception){
+                    Toast.makeText(this, R.string.error_delete, Toast.LENGTH_LONG).show()
+                }
                 //runAdapter()
             }
             .create()

@@ -11,18 +11,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.Window
 import android.widget.*
-import androidx.lifecycle.ViewModelProvider
+import com.example.spinellinotes.db.NoteRoomDatabase
 import com.example.spinellinotes.model.Note
-import com.example.spinellinotes.viewmodel.NoteViewModel
 import kotlinx.android.synthetic.main.activity_extended_note.*
+import java.lang.Exception
 import java.text.DateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 
 class ExtendedNoteActivity : AppCompatActivity() {
 
-    private lateinit var noteViewModel: NoteViewModel
-    private lateinit var note:Note
+    private lateinit var note: Note
+    private lateinit var db: NoteRoomDatabase
     private var calendar: Calendar = Calendar.getInstance()
     private var decrementTime:Long = 0
 
@@ -34,9 +34,9 @@ class ExtendedNoteActivity : AppCompatActivity() {
         setSupportActionBar(toolbar_extended_note)
         supportActionBar?.apply { setDisplayShowHomeEnabled(true) }
 
-        noteViewModel = ViewModelProvider(this).get(NoteViewModel::class.java)
+        db = NoteRoomDatabase.getDatabase(this)
 
-        note = noteViewModel.getNoteById(intent.getLongExtra("noteId", 0))
+        note = db.noteDao().getNoteById(intent.getLongExtra("noteId", 0))
 
         setNote(note)
 
@@ -90,40 +90,41 @@ class ExtendedNoteActivity : AppCompatActivity() {
                         //cancelando a notificação
                         broadcastCode = null
                     }
+
                     //verificando se a notificação foi alterada
-                    else if (button_notify_extended_note.text != this.resources.getString(R.string.notify)
+                    if (button_notify_extended_note.text != this.resources.getString(R.string.notify)
                         && broadcastCode != null) {
 
                         cancelAlarm(broadcastCode)
 
                         //atualizando id pro novo broadcast
-                        broadcastCode = System.currentTimeMillis()
+                        broadcastCode = System.currentTimeMillis()/1000
 
-                        scheduleNotification(broadcastCode)
+                        note.id?.let { scheduleNotification(broadcastCode, it) }
                     }
 
                     //passando os valores atualizados
-                    Thread(Runnable {
-                        runOnUiThread {
-                            noteViewModel.update(
-                                Note(
-                                    note.id,
-                                    title_extended_note.text.toString(),
-                                    resume_extended_note.text.toString(),
-                                    description_extended_note.text.toString(),
-                                    background,
-                                    calendar,
-                                    hasDate,
-                                    hasTime,
-                                    button_notify_extended_note.text.toString(),
-                                    broadcastCode,
-                                    note.createDate
-                                )
-                            )
-                        }
-                    }).start()
+                    try{
+                        val n = Note(
+                            note.id,
+                            title_extended_note.text.toString(),
+                            resume_extended_note.text.toString(),
+                            description_extended_note.text.toString(),
+                            background,
+                            calendar,
+                            hasDate,
+                            hasTime,
+                            button_notify_extended_note.text.toString(),
+                            broadcastCode,
+                            note.createDate
+                        )
+                        db.noteDao().updateNote(n)
 
-                    finish()
+                    }catch (e: Exception){
+                        Toast.makeText(this, R.string.error_update , Toast.LENGTH_LONG).show()
+                    }finally {
+                        finish()
+                    }
                 }
                 return true
             }
@@ -132,8 +133,11 @@ class ExtendedNoteActivity : AppCompatActivity() {
     }
 
     //preenchendo os campos de visualização com os valores da nota selecionada
+    @SuppressLint("SetTextI18n")
     private fun setNote(note: Note) {
 
+        note_create_date.text =
+            "${this.resources.getString(R.string.create_data)} ${DateFormat.getDateInstance(DateFormat.FULL).format(note.createDate)}"
         title_extended_note.setText(note.title)
         title_extended_note.setSelection(title_extended_note.text.length)
 
@@ -360,8 +364,6 @@ class ExtendedNoteActivity : AppCompatActivity() {
 
     private fun cancelAlarm(broadcastCode: Long) {
         val intent = Intent("NOTIFY")
-        intent.putExtra("title", note.title)
-
         val alarm = getSystemService(Context.ALARM_SERVICE) as AlarmManager
         val pIntent = PendingIntent.getBroadcast(this,
             broadcastCode.toInt(), intent, PendingIntent.FLAG_NO_CREATE)
@@ -370,10 +372,17 @@ class ExtendedNoteActivity : AppCompatActivity() {
         }
     }
 
-    private fun scheduleNotification(broadcastCode: Long) {
+    private fun scheduleNotification(broadcastCode: Long, id: Long) {
 
         val intent = Intent("NOTIFY")
+        intent.putExtra("id", broadcastCode.toInt())
+        intent.putExtra("noteId", id)
         intent.putExtra("title", title_extended_note.text.toString())
+        //caso haja resumo, o título da notificação será o próprio título da nota e o corpo será o resumo
+        //casonão haja, o título da notificação será o nome do app e o corpo será o título da nota
+        if (resume_extended_note.text.toString() != "") {
+            intent.putExtra("resume", resume_extended_note.text.toString())
+        }
 
         val pIntent = PendingIntent.getBroadcast(this,
             broadcastCode.toInt(), intent, 0)
