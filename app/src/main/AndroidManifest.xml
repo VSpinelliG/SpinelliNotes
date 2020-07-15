@@ -11,7 +11,9 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".ExtendedNoteActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".MainActivity"
+            android:taskAffinity=""
+            android:excludeFromRecents="true">
         </activity>
         <activity
             android:name=".NewNoteActivity"
